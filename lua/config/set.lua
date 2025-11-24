@@ -11,6 +11,8 @@ vim.opt.clipboard = 'unnamedplus' -- use system keyboard for yank
 vim.opt.number = true             -- set line numbers -- set line numbers
 vim.opt.relativenumber = true     -- use relative line numbers
 
+vim.opt.jumpoptions = 'stack'
+
 -- set tab size to 2 spaces
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
