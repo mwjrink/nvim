@@ -32,3 +32,6 @@ vim.diagnostic.config({
     --  current_line = true
     --},
 })
+
+-- vim.api.nvim_set_hl(0, "@foo.bar.lua", { link = "Identifier" })
+-- vim.treesitter.query.set("c", "injections", "(comment) @comment")
