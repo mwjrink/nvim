@@ -35,3 +35,61 @@ vim.diagnostic.config({
 
 -- vim.api.nvim_set_hl(0, "@foo.bar.lua", { link = "Identifier" })
 -- vim.treesitter.query.set("c", "injections", "(comment) @comment")
+
+local function open_floating_window()
+    local window_ids = vim.api.nvim_list_wins()
+    for _, win_id in ipairs(window_ids) do
+        print("Window ID: " .. win_id)
+        local cfg = vim.api.nvim_win_get_config(win_id)
+        if (cfg.relative or cfg.external) then
+            --  this is a floating window
+        end
+    end
+    -- Create a new scratch buffer for the floating window content
+    local buf = vim.api.nvim_create_buf(false, true)
+
+    -- Set buffer content
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+        "Hello from a floating window!",
+        "This is some custom content."
+    })
+
+    -- Define window configuration
+    local win_config = {
+        relative = "editor", -- Position relative to the editor
+        row = 5,             -- Row position
+        col = 10,            -- Column position
+        width = 50,          -- Width of the window
+        height = 5,          -- Height of the window
+        border = "rounded",  -- Border style (e.g., "rounded", "single", "double")
+        focusable = true,    -- Allow focus on the floating window
+        zindex = 100         -- Z-index for stacking windows
+    }
+
+    -- Open the floating window
+    local win_id = vim.api.nvim_open_win(buf, true, win_config)
+
+    -- Optionally, you can set filetype or other buffer options
+    vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
+    vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+end
+
+-- You can call this function from a command or a keybinding
+vim.api.nvim_create_user_command("OpenFloatingWindow", open_floating_window, {})
+
+local function custom_goto_definition()
+    vim.lsp.buf.definition({
+        -- Define a custom handler for the definition response
+        handler = function(_, result, ctx, config)
+            if result and #result > 0 then
+                -- Example: Open the definition in a new vertical split
+                vim.cmd('vsplit')
+                vim.lsp.util.jump_to_location(result[1], 'vsplit')
+            else
+                print("No definition found.")
+            end
+        end
+    })
+end
+
+vim.keymap.set('n', '<leader>gd', custom_goto_definition, { buffer = true, desc = "Custom Go To Definition" })
