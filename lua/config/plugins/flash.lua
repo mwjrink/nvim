@@ -77,15 +77,25 @@ local jumper_opts = {
 };
 
 local modes_opts = {
-    treesitter = {
-    },
-    treesitter_search = {
-        remote_op = { restore = true },
-    },
-    remote = {
-        remote_op = { restore = true, motion = true },
-    },
+    char = { jump_labels = true },
+    treesitter = jumper_opts,
+    treesitter_search = (function()
+        local opts = jumper_opts
+        opts.remote_op = { restore = true }
+        return opts
+    end)(),
+    remote = (function()
+        local opts = jumper_opts
+        opts.remote_op = { restore = true, motion = true }
+        return opts
+    end)(),
 };
+
+local final_opts = (function()
+    local opts = jumper_opts
+    opts.mode = modes_opts
+    return opts
+end)()
 
 return {
     "folke/flash.nvim",
@@ -93,9 +103,9 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {},
     keys = {
-        { "s", mode = { "n", "x", "o" }, function() require("flash").jump(jumper_opts) end,   desc = "Flash" },
+        { "s", mode = { "n", "x", "o" }, function() require("flash").jump(final_opts) end, desc = "Flash" },
         -- { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter(jumper_opts) end,        desc = "Flash Treesitter" },
-        { "r", mode = "o",               function() require("flash").remote(jumper_opts) end, desc = "Remote Flash" },
+        -- { "r", mode = "o",               function() require("flash").remote(final_opts) end, desc = "Remote Flash" },
         -- { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search(jumper_opts) end, desc = "Treesitter Search" },
         -- { "<c-s>", mode = { "c" },           function() require("flash").toggle(jumper_opts) end,            desc = "Toggle Flash Search" },
     },
