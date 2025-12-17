@@ -21,8 +21,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
             { "<leader>dr", vim.lsp.buf.references,       desc = "References" },
             { "<leader>dw", vim.lsp.buf.workspace_symbol, desc = "Workspace symbol" },
             { "K",          vim.lsp.buf.hover,            desc = "Show hover information" },
-            { "[d",         vim.diagnostic.goto_next,     desc = "Go to next diagnostic" },
-            { "]d",         vim.diagnostic.goto_prev,     desc = "Go to previous diagnostic" },
+            { "]d",         vim.diagnostic.goto_next,     desc = "Go to next diagnostic" },
+            { "[d",         vim.diagnostic.goto_prev,     desc = "Go to previous diagnostic" },
             { "gd",         vim.lsp.buf.definition,       desc = "Go to definition" },
             { "gl",         vim.diagnostic.open_float,    desc = "Open diagnostic float" },
             { "<C-h>",      vim.lsp.buf.signature_help,   desc = "Signature help" },
@@ -42,18 +42,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 local non_lsp_mappings = {
-    { "<C-d>",     "<C-d>zz",                                 desc = "Half page down and center" },
-    { "<C-u>",     "<C-u>zz",                                 desc = "Half page up and center" },
-    { "<leader>/", "<Plug>(comment_toggle_linewise_current)", desc = "Toggle comment" },
-    { "<leader>e", '<cmd>Yazi<cr>',                           desc = "Open file explorer" },
-    { "<leader>p", '"_dP',                                    desc = "Paste without overwrite" },
+    { "<C-d>",     "<C-d>zz",                                              desc = "Half page down and center" },
+    { "<C-u>",     "<C-u>zz",                                              desc = "Half page up and center" },
+    { "<leader>/", "<Plug>(comment_toggle_linewise_current)",              desc = "Toggle comment" },
+    { "<leader>e", '<cmd>Yazi<cr>',                                        desc = "Open file explorer" },
+    { "<leader>p", '"_dP',                                                 desc = "Paste without overwrite" },
     -- { "p",         '"_dp',                                    desc = "Paste without overwrite" },
-    -- { "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>", desc = "Search and replace word under cursor" },
+    { "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>", desc = "Search and replace word under cursor" },
     -- { "<leader>t", ":Today<CR>",                                           desc = "Open today's note" },
-    { "J",         "mzJ`z",                                   desc = "Join lines and keep cursor position" },
-    { "N",         "Nzzzv",                                   desc = "Previous search result and center" },
-    { "Q",         "<nop>",                                   desc = "Disable Ex mode" },
-    { "n",         "nzzzv",                                   desc = "Next search result and center" },
+    { "J",         "mzJ`z",                                                desc = "Join lines and keep cursor position" },
+    { "N",         "Nzzzv",                                                desc = "Previous search result and center" },
+    { "Q",         "<nop>",                                                desc = "Disable Ex mode" },
+    { "n",         "nzzzv",                                                desc = "Next search result and center" },
 }
 
 which_key.add(non_lsp_mappings)
@@ -134,7 +134,7 @@ local visual_mappings =
 which_key.add(visual_mappings, { mode = "v" })
 
 --- Don't overwrite pastes in visual mode
-vim.keymap.set('x', 'p', '\"_dp');
+-- vim.keymap.set('x', 'p', '\"_dp');
 
 -- Format command
 which_key.add({ { "<leader>f", vim.lsp.buf.format(), desc = "Format document" } });
@@ -143,3 +143,24 @@ which_key.add({ { "<leader>f", vim.lsp.buf.format(), desc = "Format document" } 
 vim.keymap.set('i', '<Right>', '<Right>', { noremap = true }) -- Make the right arrow behave normally in insert mode
 
 -- vim.keymap.set('n', '<leader>vh', '<nop>')
+local function switch_case()
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local word = vim.fn.expand('<cword>')
+    local word_start = vim.fn.matchstrpos(vim.fn.getline('.'), '\\k*\\%' .. (col + 1) .. 'c\\k*')[2]
+
+    -- Detect camelCase
+    if word:find('[a-z][A-Z]') then
+        -- Convert camelCase to snake_case
+        local snake_case_word = word:gsub('([a-z])([A-Z])', '%1_%2'):lower()
+        vim.api.nvim_buf_set_text(0, line - 1, word_start, line - 1, word_start + #word, { snake_case_word })
+        -- Detect snake_case
+    elseif word:find('_[a-z]') then
+        -- Convert snake_case to camelCase
+        local camel_case_word = word:gsub('(_)([a-z])', function(_, l) return l:upper() end)
+        vim.api.nvim_buf_set_text(0, line - 1, word_start, line - 1, word_start + #word, { camel_case_word })
+    else
+        print("Not a snake_case or camelCase word")
+    end
+end
+
+which_key.add({ { mode = 'nv', '<leader>cr', switch_case, desc = 'Toggle camelCase & snake_case' } })

@@ -1,5 +1,8 @@
 vim.cmd.colorscheme("catppuccin-mocha")
 
+vim.opt.is = true
+vim.opt.hls = true
+
 vim.o.guifont = "JetBrainsMono Nerd Font:h12"
 
 vim.opt.cmdheight = 0
@@ -28,11 +31,13 @@ vim.opt.incsearch = true -- incremental search
 
 vim.opt.termguicolors = true
 
+vim.opt.hidden = true
+
 vim.diagnostic.config({
-	virtual_text = true,
-	--virtual_lines = {
-	--  current_line = true
-	--},
+    virtual_text = true,
+    --virtual_lines = {
+    --  current_line = true
+    --},
 })
 
 -- vim.api.nvim_set_hl(0, "@foo.bar.lua", { link = "Identifier" })
@@ -95,3 +100,13 @@ vim.diagnostic.config({
 -- end
 --
 -- vim.keymap.set('n', '<leader>gd', custom_goto_definition, { buffer = true, desc = "Custom Go To Definition" })
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    group = vim.api.nvim_create_augroup("restore_session", { clear = true }),
+    callback = function()
+        if vim.fn.getcwd() ~= vim.env.HOME then
+            require("persistence").load()
+        end
+    end,
+    nested = true,
+})

@@ -5,7 +5,7 @@ if vim.g.neovide then
     vim.g.neovide_padding_right = 8
     vim.g.neovide_padding_left = 8
 
-    vim.g.neovide_theme = 'catppuccin'
+    vim.g.neovide_theme = 'bg_color'
     vim.g.neovide_refresh_rate = 120
     vim.g.neovide_cursor_animation_length = 0.05
     vim.g.neovide_cursor_short_animation_length = 0.05
