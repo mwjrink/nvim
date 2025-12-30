@@ -20,5 +20,8 @@ return {
             pattern = { [[^.*[/|\-|\*]{2}\s*<(KEYWORDS)\s\s*]], [[^.*[\#]{1}\s*<(KEYWORDS)\s\s*]] }, -- pattern or table of patterns, used for highlighting (vim regex)
             keyword = "bg"
         },
+        search = {
+            pattern = [[^.*([/|\-|\*]{2}|[\#]{1})\s*(TODO)\s\s*]], -- ripgrep regex
+        },
     }
 }

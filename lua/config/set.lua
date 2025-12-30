@@ -3,7 +3,7 @@ vim.cmd.colorscheme("catppuccin-mocha")
 vim.opt.is = true
 vim.opt.hls = true
 
-vim.o.guifont = "JetBrainsMono Nerd Font:h12"
+vim.o.guifont = [[JetBrainsMono Nerd Font,Noto Color Emoji:h12]]
 
 vim.opt.cmdheight = 0
 
@@ -12,9 +12,10 @@ vim.opt.swapfile = false
 -- vim.opt.showcmdloc = 'statusline'
 
 vim.opt.clipboard = 'unnamedplus' -- use system keyboard for yank
+vim.g.clipboard = 'wl-copy'
 
-vim.opt.number = true             -- set line numbers -- set line numbers
-vim.opt.relativenumber = true     -- use relative line numbers
+vim.opt.number = true         -- set line numbers -- set line numbers
+vim.opt.relativenumber = true -- use relative line numbers
 
 vim.opt.jumpoptions = 'stack'
 
@@ -101,12 +102,28 @@ vim.diagnostic.config({
 --
 -- vim.keymap.set('n', '<leader>gd', custom_goto_definition, { buffer = true, desc = "Custom Go To Definition" })
 
-vim.api.nvim_create_autocmd("VimEnter", {
-    group = vim.api.nvim_create_augroup("restore_session", { clear = true }),
-    callback = function()
-        if vim.fn.getcwd() ~= vim.env.HOME then
-            require("persistence").load()
-        end
-    end,
-    nested = true,
-})
+-- vim.api.nvim_create_autocmd("VimEnter", {
+--     group = vim.api.nvim_create_augroup("restore_session", { clear = true }),
+--     callback = function()
+--         if vim.fn.getcwd() ~= vim.env.HOME then
+--             require("persistence").load()
+--         end
+--     end,
+--     nested = true,
+-- })
+--
+-- -- Force Neovim to use Markdown for all hover windows
+-- vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+--     vim.lsp.handlers.hover, {
+--         border = "rounded", -- Optional: makes it look better
+--         format = "markdown",
+--     }
+-- )
+--
+-- vim.api.nvim_create_autocmd("FileType", {
+--     pattern = "lspinfo,markdown",
+--     callback = function()
+--         vim.opt_local.conceallevel = 2
+--         vim.opt_local.concealcursor = "nc"
+--     end,
+-- })

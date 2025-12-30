@@ -71,12 +71,17 @@ local search_line = function()
     builtin.grep_string({ search = word })
 end
 
+-- local search_fuzzy = function()
+--     builtin.grep_string({ shorten_path = true, word_match = "-w", only_sort_text = true, search = '' })
+-- end
+
 local telescope_mappings = {
     { "<leader>a",  "<cmd>Telescope aerial<CR>", desc = "Telescope aerial" },
     { "<leader>j",  group = "Find" },
-    { "<leader>jf", builtin.find_files,          desc = "Find a file" },
+    { "<leader>jd", builtin.find_files,          desc = "Find a file" },
     -- { "<leader>fg", builtin.git_files,  desc = "Find git files" },
-    { "<leader>jd", builtin.live_grep,           desc = "Find in a file" },
+    { "<leader>jf", builtin.live_grep,           desc = "Fuzzy find in a file" },
+    -- { "<leader>jr", search_fuzzy,                desc = "Find in a file" },
     { "<leader>jw", search_word,                 desc = "Find word under cursor" },
     { "<leader>js", search_line,                 desc = "Find line under cursor" },
     { "<leader>jb", builtin.buffers,             desc = "Find buffers" },
@@ -116,6 +121,7 @@ local trouble_mappings = {
     { "<leader>t",  group = "Trouble" },
     { "<leader>tj", "<cmd>Trouble diagnostics toggle focus=true filter.severity=vim.diagnostic.severity.ERROR<CR>", desc = "Open Trouble" },
     { "<leader>th", "<cmd>Trouble diagnostics toggle focus=true<CR>",                                               desc = "Focus Trouble window" },
+    { "<leader>tc", "<cmd>Trouble close<CR>",                                                                       desc = "Close Trouble window" },
     { "<leader>t[", function() trouble.next({ skip_groups = true, jump = true }) end,                               desc = "Trouble next issue" },
     { "<leader>t]", function() trouble.previous({ skip_groups = true, jump = true }) end,                           desc = "Trouble previous issue" },
 }
@@ -151,12 +157,12 @@ local function switch_case()
     -- Detect camelCase
     if word:find('[a-z][A-Z]') then
         -- Convert camelCase to snake_case
-        local snake_case_word = word:gsub('([a-z])([A-Z])', '%1_%2'):lower()
+        local snake_case_word = word:gsub('([a-z0-9])([A-Z0-9])', '%1_%2'):lower()
         vim.api.nvim_buf_set_text(0, line - 1, word_start, line - 1, word_start + #word, { snake_case_word })
         -- Detect snake_case
     elseif word:find('_[a-z]') then
         -- Convert snake_case to camelCase
-        local camel_case_word = word:gsub('(_)([a-z])', function(_, l) return l:upper() end)
+        local camel_case_word = word:gsub('(_)([a-z0-9])', function(_, l) return l:upper() end)
         vim.api.nvim_buf_set_text(0, line - 1, word_start, line - 1, word_start + #word, { camel_case_word })
     else
         print("Not a snake_case or camelCase word")
@@ -164,3 +170,7 @@ local function switch_case()
 end
 
 which_key.add({ { mode = 'nv', '<leader>cr', switch_case, desc = 'Toggle camelCase & snake_case' } })
+
+which_key.add({ { mode = 'n', '<leader>tt', switch_case, desc = 'Toggle camelCase & snake_case' } })
+
+which_key.add({ { mode = 'n', '<leader>qs', function() require("persistence").load() end, desc = 'Load last session.' } })
