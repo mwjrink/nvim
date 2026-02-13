@@ -10,7 +10,10 @@ return {
                 lualine_a = { { 'mode', fmt = function(str) return str:sub(1, 3) end } },
                 lualine_b = { 'branch', 'diff' },
                 lualine_c = { 'filename' },
-                -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
+                -- lualine_d = { 'buffers' },
+                -- lualine_e = { 'diagnostics' },
+                -- lualine_f = { 'hostname' },
+                -- lualine_w = { 'encoding', 'fileformat', 'filetype' },
                 lualine_x = {
                     {
                         require("noice").api.status.search.get,

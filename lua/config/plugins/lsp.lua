@@ -24,8 +24,9 @@ return {
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "lua_ls",
-                "just",
+                -- "just",
                 "rust_analyzer",
+                "glsl_analyzer",
                 -- "clangd",
                 -- "gopls",
             },
@@ -57,6 +58,19 @@ return {
             },
         })
         vim.lsp.enable('clangd')
+        vim.filetype.add({
+            extension = {
+                h = 'c',
+                c = 'c',
+            },
+        })
+
+        vim.lsp.config('just', {
+            cmd = { "/usr/bin/just-lsp", },
+        })
+        vim.lsp.enable('just')
+
+        vim.lsp.enable('slangd')
 
         vim.lsp.config('zls', {
             root_dir = vim.fs.root(0, { ".git", "build.zig", "zls.json" }),
