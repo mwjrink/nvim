@@ -58,6 +58,7 @@ return {
             },
         })
         vim.lsp.enable('clangd')
+        vim.lsp.enable('glsl_analyzer')
         vim.filetype.add({
             extension = {
                 h = 'c',

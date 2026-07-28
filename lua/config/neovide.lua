@@ -17,4 +17,6 @@ if vim.g.neovide then
 
     vim.g.neovide_scroll_animation_length = 0
     vim.g.neovide_scroll_animation_far_lines = 0
+
+    vim.g.neovide_progress_bar_enabled = false
 end

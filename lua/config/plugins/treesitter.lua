@@ -6,7 +6,7 @@ return {
         local configs = require("nvim-treesitter")
         configs.install({
             "c", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript", "rust", "markdown",
-            "markdown_inline"
+            "markdown_inline", "glsl"
         });
     end
 }
