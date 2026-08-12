@@ -13,7 +13,7 @@ return {
                 solid = false,             -- use solid styling for floating windows, see |winborder|
             },
             show_end_of_buffer = false,    -- shows the '~' characters after the end of buffers
-            term_colors = true,           -- sets terminal colors (e.g. `g:terminal_color_0`)
+            term_colors = true,            -- sets terminal colors (e.g. `g:terminal_color_0`)
             dim_inactive = {
                 enabled = false,           -- dims the background color of inactive window
                 shade = "dark",
@@ -37,8 +37,20 @@ return {
                 operators = {},
                 -- miscs = {}, -- Uncomment to turn off hard-coded styles
             },
-            color_overrides = {},
-            custom_highlights = {},
+            color_overrides = {
+                -- #11111b
+                -- mocha = {
+                --     base = "#11111b",
+                --     mantle = "#11111b",
+                --     crust = "#11111b",
+                -- }
+            },
+            custom_highlights = {
+                Normal = { bg = "#181825" },
+                -- Normal = { bg = "#11111b" },
+                -- NormalNC = { bg = "#11111b" },
+                NormalNC = { bg = "#181825" },
+            },
             default_integrations = true,
             auto_integrations = true,
             integrations = {

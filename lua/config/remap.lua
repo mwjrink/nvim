@@ -1,9 +1,45 @@
 local which_key = require("which-key")
 
+
+-- local swap_window = function(direction)
+--     local current_win_num = vim.fn.winnr()
+--     local target_win = if (direction == 'l') {
+--         target_win = current_win_num + 1
+--         -- check if target_win is a valid win
+--     } else if (direction == 'h') {
+--         target_win = min(current_win_num - 1, 0)
+--     } else {
+--         return;
+--     }
+--     vim.cmd(target_win .. 'wincmd x')
+-- end
+local swap_window_h = function()
+    local current_win_num = vim.fn.winnr()
+    local target_win = current_win_num - 1
+    if target_win < 1 then
+        return
+    end
+
+    vim.cmd(target_win .. 'wincmd x')
+end
+
+local swap_window_l = function()
+    local current_win_num = vim.fn.winnr()
+    local last_win_num = vim.fn.winnr('$') -- Gets the total number of windows
+    local target_win = current_win_num + 1
+    if target_win > last_win_num then
+        return
+    end
+
+    vim.cmd(target_win .. 'wincmd x')
+end
+
 local window_mappings = {
-    { "<leader>v", "<cmd>vsplit<CR>",   desc = "Split window vertical" },
-    { "<leader>h", "<cmd>wincmd h<CR>", desc = "Focus left" },
-    { "<leader>l", "<cmd>wincmd l<CR>", desc = "Focus right" },
+    { "<leader>v",  "<cmd>vsplit<CR>",   desc = "Split window vertical" },
+    { "<leader>h",  "<cmd>wincmd h<CR>", desc = "Focus left" },
+    { "<leader>l",  "<cmd>wincmd l<CR>", desc = "Focus right" },
+    { "<leader>wh", swap_window_h,       desc = "Swap window left" },
+    { "<leader>wl", swap_window_l,       desc = "Swap window right" },
 }
 
 which_key.add(window_mappings)
@@ -63,25 +99,40 @@ local builtin = require("telescope.builtin")
 
 local search_word = function()
     local word = vim.fn.expand("<cword>")
-    builtin.grep_string({ search = word })
+    local root = vim.fs.root(0, { '.git', 'justfile', 'package.json', 'Cargo.toml', 'Makefile' })
+    builtin.grep_string({ cwd = root, search = word })
+    -- builtin.live_grep({ cwd = root, default_text = word })
 end
 
 local search_line = function()
     local word = vim.fn.expand("<cWORD>")
-    builtin.grep_string({ search = word })
+    local root = vim.fs.root(0, { '.git', 'justfile', 'package.json', 'Cargo.toml', 'Makefile' })
+    builtin.grep_string({ cwd = root, search = word })
+    -- builtin.live_grep({ cwd = root, default_text = word })
 end
 
--- local search_fuzzy = function()
---     builtin.grep_string({ shorten_path = true, word_match = "-w", only_sort_text = true, search = '' })
--- end
+local live_grep_wrap = function()
+    local root = vim.fs.root(0, { '.git', 'justfile', 'package.json', 'Cargo.toml', 'Makefile' })
+    builtin.live_grep({ cwd = root })
+end
+
+local find_files_wrap = function()
+    local root = vim.fs.root(0, { '.git', 'justfile', 'package.json', 'Cargo.toml', 'Makefile' })
+    builtin.find_files({ cwd = root })
+end
+
+local search_fuzzy = function()
+    local root = vim.fs.root(0, { '.git', 'justfile', 'package.json', 'Cargo.toml', 'Makefile' })
+    builtin.grep_string({ cwd = root, shorten_path = true, word_match = "-w", only_sort_text = true, search = '' })
+end
 
 local telescope_mappings = {
     { "<leader>a",  "<cmd>Telescope aerial<CR>", desc = "Telescope aerial" },
     { "<leader>j",  group = "Find" },
-    { "<leader>jd", builtin.find_files,          desc = "Find a file" },
+    { "<leader>jd", find_files_wrap,             desc = "Find a file" },
     -- { "<leader>fg", builtin.git_files,  desc = "Find git files" },
-    { "<leader>jf", builtin.live_grep,           desc = "Fuzzy find in a file" },
-    -- { "<leader>jr", search_fuzzy,                desc = "Find in a file" },
+    { "<leader>jf", live_grep_wrap,              desc = "Fuzzy find in a file" },
+    { "<leader>jr", search_fuzzy,                desc = "Find in a file" },
     { "<leader>jw", search_word,                 desc = "Find word under cursor" },
     { "<leader>js", search_line,                 desc = "Find line under cursor" },
     { "<leader>jb", builtin.buffers,             desc = "Find buffers" },
@@ -90,40 +141,14 @@ local telescope_mappings = {
 
 which_key.add(telescope_mappings)
 
--- Harpoon Commands
-local harpoon = require("harpoon")
-local harpoon_mappings = {
-    { "<leader>h",   group = "Harpoon" },
-    { "<leader>ha",  function() harpoon:list():add() end,                         desc = "Find a file" },
-    { "<leader>hf",  function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Find in a file" },
-
-    -- Jump to register
-    { "<leader>h4",  function() harpoon:list():select(1) end,                     desc = "Jump to Harpoon entry 1" },
-    { "<leader>h5",  function() harpoon:list():select(2) end,                     desc = "Jump to Harpoon entry 2" },
-    { "<leader>h6",  function() harpoon:list():select(3) end,                     desc = "Jump to Harpoon entry 3" },
-    { "<leader>h7",  function() harpoon:list():select(4) end,                     desc = "Jump to Harpoon entry 4" },
-
-    -- Replace Register
-    { "<leader>hr4", function() harpoon:list():replace_at(1) end,                 desc = "Replace Harpoon entry 1" },
-    { "<leader>hr5", function() harpoon:list():replace_at(2) end,                 desc = "Replace Harpoon entry 2" },
-    { "<leader>hr6", function() harpoon:list():replace_at(3) end,                 desc = "Replace Harpoon entry 3" },
-    { "<leader>hr7", function() harpoon:list():replace_at(4) end,                 desc = "Replace Harpoon entry 4" },
-
-    -- Toggle previous & next buffers stored within Harpoon list
-    { "<leader>hs",  function() harpoon:list():prev() end,                        desc = "Harpoon entry 4" },
-    { "<leader>hg",  function() harpoon:list():next() end,                        desc = "Harpoon entry 4" },
-}
-
-which_key.add(harpoon_mappings)
-
-local trouble = require("trouble")
+-- local trouble = require("trouble")
 local trouble_mappings = {
     { "<leader>t",  group = "Trouble" },
     { "<leader>tj", "<cmd>Trouble diagnostics toggle focus=true filter.severity=vim.diagnostic.severity.ERROR<CR>", desc = "Open Trouble" },
     { "<leader>th", "<cmd>Trouble diagnostics toggle focus=true<CR>",                                               desc = "Focus Trouble window" },
     { "<leader>tc", "<cmd>Trouble close<CR>",                                                                       desc = "Close Trouble window" },
-    { "<leader>t[", function() trouble.next({ skip_groups = true, jump = true }) end,                               desc = "Trouble next issue" },
-    { "<leader>t]", function() trouble.previous({ skip_groups = true, jump = true }) end,                           desc = "Trouble previous issue" },
+    -- { "<leader>t[", function() trouble.next({ skip_groups = true, jump = true }) end,                               desc = "Trouble next issue" },
+    -- { "<leader>t]", function() trouble.previous({ skip_groups = true, jump = true }) end,                           desc = "Trouble previous issue" },
 }
 
 which_key.add(trouble_mappings)
@@ -150,7 +175,7 @@ vim.keymap.set('i', '<Right>', '<Right>', { noremap = true }) -- Make the right 
 
 -- vim.keymap.set('n', '<leader>vh', '<nop>')
 local function switch_case()
-    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local line, col = table.unpack(vim.api.nvim_win_get_cursor(0))
     local word = vim.fn.expand('<cword>')
     local word_start = vim.fn.matchstrpos(vim.fn.getline('.'), '\\k*\\%' .. (col + 1) .. 'c\\k*')[2]
 
@@ -169,8 +194,17 @@ local function switch_case()
     end
 end
 
+local function restart_nvim()
+    require("persistence").save()
+
+    vim.cmd('restart lua require("persistence").load()')
+    -- TODO the following does not fix the neovide rendering bug, I still need to manually hit a key
+    -- vim.cmd([[execute 'restart lua require("persistence").load()' | normal! ]])
+end
+
 which_key.add({ { mode = 'nv', '<leader>cr', switch_case, desc = 'Toggle camelCase & snake_case' } })
 
 which_key.add({ { mode = 'n', '<leader>tt', switch_case, desc = 'Toggle camelCase & snake_case' } })
 
 which_key.add({ { mode = 'n', '<leader>qs', function() require("persistence").load() end, desc = 'Load last session.' } })
+which_key.add({ { mode = 'n', '<leader>rr', restart_nvim, desc = 'Load last session.' } })

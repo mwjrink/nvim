@@ -41,6 +41,8 @@ return {
             vim.lsp.protocol.make_client_capabilities(),
             cmp_lsp.default_capabilities())
 
+        -- capabilities.textDocument.completion.editsNearCursor = true
+
         vim.lsp.capabilities = capabilities
 
         vim.lsp.config('*', {
@@ -54,8 +56,9 @@ return {
                 "--clang-tidy",
                 "--header-insertion=never",
                 "--completion-style=bundled",
-                "--offset-encoding=utf-16",
+                -- "--offset-encoding=utf-16",
             },
+            capabilities = capabilities,
         })
         vim.lsp.enable('clangd')
         vim.lsp.enable('glsl_analyzer')
@@ -113,7 +116,7 @@ return {
             mapping = cmp.mapping.preset.insert({
                 ['<C-k>'] = cmp.mapping.select_prev_item(cmp_select),
                 ['<C-j>'] = cmp.mapping.select_next_item(cmp_select),
-                ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+                ['<Tab>'] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
             sources = cmp.config.sources({
